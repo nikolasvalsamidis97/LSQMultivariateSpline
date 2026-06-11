@@ -351,7 +351,7 @@ def _construct_full_knots(t, bbox, degrees):
     return tuple(full_knots)
 
 
-def _bspline_basis_1d(x, knots, degree, basis_index):
+def _bspline_basis_axis(x, knots, degree, basis_index):
     """Evaluate one 1D B-spline basis function."""
     x = np.asarray(x, dtype=float)
     knots = np.asarray(knots, dtype=float)
@@ -375,7 +375,7 @@ def _bspline_basis_1d(x, knots, degree, basis_index):
         left_part = (
             (x - knots[basis_index])
             / left_denominator
-            * _bspline_basis_1d(x, knots, degree - 1, basis_index)
+            * _bspline_basis_axis(x, knots, degree - 1, basis_index)
         )
 
     right_denominator = (
@@ -387,7 +387,7 @@ def _bspline_basis_1d(x, knots, degree, basis_index):
         right_part = (
             (knots[basis_index + degree + 1] - x)
             / right_denominator
-            * _bspline_basis_1d(x, knots, degree - 1, basis_index + 1)
+            * _bspline_basis_axis(x, knots, degree - 1, basis_index + 1)
         )
 
     values = left_part + right_part
@@ -407,7 +407,7 @@ def _design_matrix_axis(x, knots, degree):
     """
     n_basis = len(knots) - degree - 1
     columns = [
-        _bspline_basis_1d(x, knots, degree, basis_index)
+        _bspline_basis_axis(x, knots, degree, basis_index)
         for basis_index in range(n_basis)
     ]
     return np.column_stack(columns)
